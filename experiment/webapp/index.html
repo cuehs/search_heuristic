@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Exploring Landscapes Alone</title>
+    <link href="js/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/main.css" rel="stylesheet" -->
+</head>
+
+<body id="body">
+<div class="container-fluid">
+    <div class="page-header" id="header">
+    </div>
+    <div class="row">
+        <div class="col-md-3" id="textbar">
+            <span id="textfield">Willkommen v2 <br> Bitte gib dein Alter und Geschlecht ein.
+                <form>Alter:<br><input type="number" id="age" min="18" max="111" required><br>
+                    Geschlecht:   <input type="radio" name="gender" value="female"> Weiblich
+                    <input type="radio" name="gender" value="male"> Männlich<br>
+                </form>
+         </span>
+            <div id="buttonarea">
+                <button id="trainingButton" type="button" onclick="trainingButton()">Weiter</button>
+            </div>
+        </div>
+        <div class="col-md-7" id="game">
+        </div>
+        <div class="col-md-1" id="sidebar">
+            <table id="sidebarTable" cellspacing='0' class='text'>
+                <tr id="currentPointLine">
+                    <td></td>
+                    <td><span id=currentPoint>0</span> Punkte</td>
+                </tr>
+                <tr id="stepLine">
+                    <td>Zug:</td>
+                    <td><span id="step">Training</span> aus <span id="stepTotal">30 </span></td>
+                </tr>
+                <tr id="levelLine">
+                    <td>Level:</td>
+                    <td><span id="level">Training</span> aus <span id="levelTotal">60 </span></td>
+                </tr>
+                <tr id="koopLine">
+                    <td>Kooperativ:</td>
+                    <td><span id="koop">Ja</span></td>
+                </tr>
+                <tr id="totalPointLine">
+                    <td></td>
+                    <td><span id="totalPoint">0</span></td>
+                </tr>
+            </table>
+            <button id="leftButton" type="button" onclick="button()">Continue</button>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="js/jquery-3.1.1.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap/js/bootstrap.min.js"></script>
+<script src="js/game.js" charset="UTF-8"></script>
+<script src="js/index.js" charset="UTF-8"></script>
+<script src="js/text.js" charset="UTF-8"></script>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+@charset "UTF-8";
+.container-fluid {
+    margin-left: 2%;
+    margin-right: 2%;
+}
+.grid {
+    border-collapse: separate;
+    table-layout: fixed;
+    border: 3px solid transparent;
+    border-spacing: 3px;
+}
+.grid td {
+    cursor: pointer;
+    width: 14px;
+    height: 12px;
+    background-color: #eee8aa;
+    text-align: center;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1
+}
+.grid td.revealed {
+    background-color: #00ff00;
+    font-weight: bold;
+    color : transparent;
+    text-shadow : 0 0 0 #000;
+}
+.grid td.other {
+    background-color: deepskyblue;
+    font-weight: bold;
+    color : transparent;
+    text-shadow : 0 0 0 #000;
+}
+.grid td.position {
+    box-shadow:0 0 0 3px magenta;
+    font-weight: bold;
+}
+#header{
+    text-align: center;
+    margin: 0em;
+}
+
+#textbar {
+    text-align: justify;
+    margin-top: 1em;
+    padding: 5px;
+}
+
+#game {
+    align-content: center;
+    margin-top: 1em;
+    padding: 0px;
+    display:inline;
+}
+
+#sidebar {
+    text-align: justify;
+    margin-top: 1em;
+    margin-left: 5em;
+    background-color: #ebebeb;
+    padding: 10px;
+}
+
+#waiting{
+    text-align:left;
+    font-size: large;
+    font-weight: bold;
+    color: #9b0000;
+}
+
+#time{
+    font-weight: bold;
+    font-size: large;
+    color: #9b0000;
+}
+
+#currentPoint{
+    font-weight: bold;
+}
+
+
+#koop{
+    font-weight: bold;
+    color: #9b0000;
+}
+
+#copyAllowed{
+    font-weight: bold;
+    color: #9b0000;
+}
+
+
