@@ -1,7 +1,7 @@
-# TITLE
+# Search as a simple take-the-best heuristic
 
 Complete experimental code, simulation code, evaluation code, and data for replicating the results from:
-
+``Search as a simple take-the-best heuristic``
 
 ## Getting Started
 
