@@ -1,8 +1,6 @@
-# Search as a simple take-the-best heuristic
+# TITLE
 
 Complete experimental code, simulation code, evaluation code, and data for replicating the results from:
-
-``Search as a simple take-the-best heuristic``
 
 
 ## Getting Started
@@ -71,11 +69,15 @@ run ``_basic.R ``
 
 ### Simulation
 
-run ``run_and_fit_simulation.R``
+To fit the parameters of the simulation to the experimental data run ``run_and_fit_simulation.R``
 
 ### Figures
 
-run ``figures_all.R``
+To generate the raw versions of all figures used in the paper run ``figures_all.R``
+
+### Numbers
+
+To calculate all the numeric values (such as mean and sd) used in the paper run ``numbers_all.R``
 
 ## Authors
 
