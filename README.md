@@ -1,4 +1,4 @@
-# TITLE
+# Search as a take-the-best heuristic
 
 Complete experimental code, simulation code, evaluation code, and data for replicating the results from:
 
