@@ -128,16 +128,18 @@ oneExplorationSimulation <- function(levelidP,noiseLevel,step = 1:31 ) {
 #         Exploitation  # 
 #########################
 
-oneExploitationSimulation <- function(levelidP, stopLevel, noiseLevel, safetyLevelMean, safetyLevelSd, step = 1:31) {
+oneExploitationSimulation <- function(levelidP, ignoreLevel = 1,stopLevel, noiseLevel, safetyLevelMean, safetyLevelSd, step = 1:31) {
 
   noiseLevel <- unique(noiseLevel)
   stopLevel<- unique(stopLevel)
+  ignoreLevel<- unique(ignoreLevel)
+  
   safetyLevelMean <- unique(safetyLevelMean)
   safetyLevelSd <- unique(safetyLevelSd)
   landscape <-landscapesMatrix[[unique(levelidP)]]
   landscapeSize <- length(landscapesMatrix[[unique(levelidP)]])
   allowedToVisit <- rep(T, landscapeSize)
-  ignoreLevel <- 1
+
   currentPosition <- 1
   maxPayoff <- 0
   maxPayoffPosition <- NULL
@@ -145,14 +147,18 @@ oneExploitationSimulation <- function(levelidP, stopLevel, noiseLevel, safetyLev
   currentPayoffL <- NULL
   currentPositionL <- NULL
   currentBehaviorL <- NULL
-  stopLevel <- runif(1,1,stopLevel)
+  
+  stopLevel <- round(runif(1,1,stopLevel))
+  ignoreLevel <- round(runif(1,0,ignoreLevel))
+  print(stopLevel)
+  print(ignoreLevel)
   safetyLevel <- min(1,max(0,rtruncnorm(1,a=0,b=1.1,safetyLevelMean,safetyLevelSd)))
-    #print(safetyLevel)
+
   for(s in step){
     timeLeft <- length(step)-s
     currentPayoff <- landscape[currentPosition]
     
-    if(currentPayoff >= maxPayoff){
+    if((currentPayoff >= maxPayoff)  ){
       maxPayoff <- currentPayoff
       maxPayoffPosition <- currentPosition
     }
@@ -162,7 +168,7 @@ oneExploitationSimulation <- function(levelidP, stopLevel, noiseLevel, safetyLev
     # Rule 1: stay inside circle
     areaMatrix <- getAreaMatrix1D(maxPayoffPosition)
     areaMatrix[currentPosition+1] <- areaMatrix[currentPosition+1]+1
-    #print(stopLevel)
+
     insideArea <- (areaMatrix) < floor(max(1,(timeLeft)*safetyLevelCalc(maxPayoff,ignoreLevel, stopLevel,safetyLevel)))
     #insideArea <- areaMatrix < floor(max(1,(timeLeft)*S))
     visibleInsideArea <- insideArea[positionRadius]
@@ -257,12 +263,12 @@ oneExploitationSimulation <- function(levelidP, stopLevel, noiseLevel, safetyLev
 #        COMBINED       # combine3
 #########################
 
-oneCombinedSimulation <- function(levelidP, ignoreLevel = 1, stopLevel, noiseLevel, safetyLevelMean,safetyLevelSd, step = 1:31) {
+oneCombinedSimulation <- function(levelidP, ignoreLevel, stopLevel, noiseLevel, safetyLevelMean,safetyLevelSd, step = 1:31) {
   
   levelid <- unique(levelidP)
   landscape <- landscapesMatrix[[levelid]]
-  ignoreLevel <-unique(ignoreLevel)
-  stopLevel <- unique(stopLevel)
+  ignoreLevelP <-  unique(ignoreLevel)
+  stopLevelP <- unique(stopLevel)
   safetyLevelMean<-unique(safetyLevelMean)
   safetyLevelSd<-unique(safetyLevelSd)
   noiseLevel <- unique(noiseLevel)
@@ -282,7 +288,15 @@ oneCombinedSimulation <- function(levelidP, ignoreLevel = 1, stopLevel, noiseLev
   nextY<-NULL
   
   maxPayoff <- 0
-  stopLevel <- runif(1,1,stopLevel)
+  stopLevel <- runif(1,1,stopLevelP)
+  ignoreLevel <- (runif(1,0,ignoreLevelP))
+  
+  while(stopLevel  < (ignoreLevel)){
+    ignoreLevel <- (runif(1,0,ignoreLevelP))
+    stopLevel <- runif(1,1,stopLevelP)
+    #print(paste(stopLevel,ignoreLevel))
+  }
+  
   safetyLevel <- min(1,max(0,rtruncnorm(1,a=0,b=1,safetyLevelMean,safetyLevelSd)))
   
   for (s in step) {

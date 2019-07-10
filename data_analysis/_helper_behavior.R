@@ -127,6 +127,7 @@ isMaximizingUnvisitedPayoff <- function(levelid,positionX,positionY){
 }
 
 isMaximizingVisibility <- function(levelid,positionX,positionY){
+
   landscape <- landscapesMatrix[[unique(levelid)]]
   notSeen <- matrix(T,nrow(landscape),ncol(landscape))
   maxPayoff <- NULL
@@ -155,6 +156,7 @@ isMaximizingVisibility <- function(levelid,positionX,positionY){
   }
   return(c(maxPayoff,NA))
 }
+
 
 ####
 # for stop
@@ -304,3 +306,5 @@ ggplot(landscapeDf) + geom_raster(aes(x=position,y=time,fill=value))+
   scale_fill_viridis(option ="D",breaks = c(0,1),labels=c("0","1"))+
   labs(x="position",y="round",fill="norm.\npayoff\n")+scale_shape(guide=FALSE)
 }
+
+

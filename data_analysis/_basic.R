@@ -1,12 +1,11 @@
+library(here)
+library(viridis)
+library(truncnorm)
+library(cowplot)
+library(fields)
+library(reshape2)
+library(tidyverse)
 if(!exists("DATAISREAD")){
-  library(here)
-  library(viridis)
-  library(truncnorm)
-  library(cowplot)
-  library(fields)
-  library(reshape2)
-  library(tidyverse)
-
   set.seed(20190118)
   select <- dplyr::select
   sample<-base::sample

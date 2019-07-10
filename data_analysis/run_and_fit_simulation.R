@@ -6,7 +6,7 @@ source(here("/data_analysis/_basic.R"))
 ###
 
 print("run simulation explore (this may take a while)")
-experimentalLevelId <- seq(1,4000)
+experimentalLevelId <- seq(1,1000)
 explorationSimulationDf <- tibble(
   userid = integer(),
   step = integer(),
@@ -73,11 +73,11 @@ experimentalData <- exploitationDf %>% group_by(levelid)%>%
             R = howFarFromEndPos1(position=position,endPosition = endMaxPosition),
             S = R / D_optimal,
             endPayoff = mean(endPayoff)) %>% 
-  ungroup()  %>%mutate(stops = S==0)
+  ungroup()  %>%mutate(stops = S==0, noReturn = S > 1)
 
 
 fitData<-experimentalData %>%
-  group_by(endPayoff,stops) %>% tally()%>% group_by(endPayoff)%>% mutate(freq=n/sum(n)) 
+  group_by(endPayoff,stops,noReturn) %>% tally()%>% group_by(endPayoff)%>% mutate(freq=n/sum(n)) 
 
 # fit for S=0
 m1<-lm(freq~0+endPayoff,weight=n,data=filter(fitData,stops==T))
@@ -85,6 +85,8 @@ kStop <- m1$coefficients
 plot(seq(0,100),seq(0,100)*kStop, type = "l")
 points(filter(fitData,stops==T)%>%
          pull(endPayoff),filter(fitData,stops==T)%>%pull(freq))
+
+
 # fit for S>0
 S <- experimentalData  %>% 
   filter(stops ==F,endPayoff > 0, S<=1) %>%ungroup()%>% mutate(S = pmin(S,.99))%>%
@@ -107,24 +109,37 @@ print(paste("k:",(m1$coefficients),
             "safety level: mean: ", safetyStop[[1]][1] , "sd:",
             safetyStop[[1]][2]))
 
+
+
+# fit for S>1
+m1<-lm(I(freq-1)~0+endPayoff,weight=n,data=filter(fitData,noReturn==T))
+kIgnore <- m1$coefficients
+plot(seq(0,100),1+(seq(0,100)*kIgnore), type = "l")
+points(filter(fitData,noReturn==T)%>%
+         pull(endPayoff),filter(fitData,noReturn==T)%>%pull(freq))
+summary(m1)
+
 print("run: simulation exploit")
 experimentalLevelIdStop <- seq(4001,8000)
 
 exploitationSimulationDf <- tibble(userid = integer(), safetyLevelMean = numeric(),
-                           safetyLevelSd = numeric(), stopLevel = integer(), noiseLevel = numeric(),
+                           safetyLevelSd = numeric(),ignoreLevel = integer(),
+                           stopLevel = integer(), noiseLevel = numeric(),
                            step = integer(),levelid = integer(),rich = logical()) %>%
   complete(userid = 1, levelid = experimentalLevelIdStop, step = c(1:31),
-           safetyLevelMean = meanStop, safetyLevelSd = sdStop, stopLevel = round(1/kStop),
+           safetyLevelMean = meanStop, safetyLevelSd = sdStop,
+           ignoreLevel = round(1/kIgnore)*-1,
+           stopLevel = round(1/kStop),
            noiseLevel = bestEpsilon) %>%
   mutate(rich = ifelse((levelid %% 2 == 0), "rich", "poor")) %>%
   arrange(userid,levelid,safetyLevelMean,safetyLevelSd,stopLevel,noiseLevel,step)
 
 exploitationSimulationDf <-
   exploitationSimulationDf%>%
-  group_by(userid, levelid, noiseLevel, stopLevel, safetyLevelMean,safetyLevelSd) %>%
+  group_by(userid, levelid, noiseLevel, stopLevel,ignoreLevel, safetyLevelMean,safetyLevelSd) %>%
   mutate(sim = 
            oneExploitationSimulation(levelid, noiseLevel = noiseLevel, 
-                             safetyLevelMean = safetyLevelMean,
+                             safetyLevelMean = safetyLevelMean,ignoreLevel=ignoreLevel,
                              safetyLevelSd = safetyLevelSd, stopLevel = stopLevel,step)) %>%
   separate(col = sim,sep = ",",into = c("position", "payoff", "behavior")) %>%
   mutate(position = as.integer(position),payoff = as.numeric(payoff),
@@ -157,11 +172,11 @@ experimentalData <- combinedDf %>% group_by(levelid)%>%
                                   endPositionX = endPositionX, endPositionY = endPositionY),
             S = R / D_optimal,
             endPayoff = mean(endPayoff)) %>% 
-  ungroup() %>%mutate(stops = S==0)
+  ungroup() %>%mutate(stops = S==0,noReturn = S==1)
 
 
 fitData<-experimentalData %>%
-  group_by(endPayoff,stops) %>% tally()%>% group_by(endPayoff)%>% mutate(freq=n/sum(n)) 
+  group_by(endPayoff,stops,noReturn) %>% tally()%>% group_by(endPayoff)%>% mutate(freq=n/sum(n)) 
 
 # fit for S=0
 m2<-lm(freq~0+endPayoff,weight=n,data=filter(fitData,stops==T))
@@ -184,6 +199,13 @@ hist(
   experimentalData  %>% filter(stops ==F,endPayoff > 0)%>%pull(S),freq = F)
 lines(seq(0,2,.01),dtruncnorm(seq(0,2,.01),0,1,meanCombined,sdCombined))
 
+# fit for S>1
+m2<-lm(I(freq-1)~0+endPayoff,weight=n,data=filter(fitData,noReturn==T))
+kIgnore <- m2$coefficients
+plot(seq(0,100),1+(seq(0,100)*kIgnore), type = "l")
+points(filter(fitData,noReturn==T)%>%
+         pull(endPayoff),filter(fitData,noReturn==T)%>%pull(freq))
+summary(m2)
 print("combined phase")
 summary(m2)
 summary(safetyCombined)
@@ -192,6 +214,7 @@ print(paste("k:",(m2$coefficients),
 
 print("run: simulation combine")
 experimentalLevelId <- seq(8001,12000)
+
 combinedSimulationDf <- tibble(
   userid = integer(),
   step = integer(),
@@ -205,6 +228,7 @@ combinedSimulationDf <- tibble(
 ) %>%
   complete(userid = 1,
            levelid = experimentalLevelId,
+           ignoreLevel = round(1/(kIgnore))*-1,
            stopLevel = round(1/kCombined),
            safetyLevelMean = meanCombined, 
            safetyLevelSd = sdCombined, 
@@ -218,6 +242,8 @@ combinedSimulationDf <-
   group_by(userid, levelid,noiseLevel, stopLevel,  safetyLevelMean,safetyLevelSd) %>%
   mutate(sim = 
            oneCombinedSimulation(levelidP = levelid,
+                                 
+                                 ignoreLevel = ignoreLevel,
                                 noiseLevel = noiseLevel, 
                                 safetyLevelMean = safetyLevelMean,
                                 safetyLevelSd = safetyLevelSd, 

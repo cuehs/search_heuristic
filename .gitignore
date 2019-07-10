@@ -5,6 +5,8 @@
 
 *.png
 *.pdf
+*.html
+
 
 *.iml
 *.Rproj

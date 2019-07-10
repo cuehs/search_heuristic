@@ -4,6 +4,8 @@ source(here("/data_analysis/_basic.R"))
 #needs simulations to be run before
 #source(here("/data_analysis/run_and_fit_simulation.R"))
 
+PLOTFIGURES <- F
+
 ###
 # exploration
 ###
@@ -18,11 +20,12 @@ tmp<- explorationDf %>% filter(userid == 20, level == 20)
 B<- plotTrajectoryFromCoordinates2D(tmp %>% pull(positionX),tmp %>% pull(positionY),tmp %>% pull(levelid) %>% unique())
 plot_grid(B+ theme(legend.position='none'),A+ theme(legend.position='none'),C,nrow = 1,rel_widths=c(3,3,.5),labels=c("poor","rich",NULL) )
 # describtive
+if(PLOTFIGURES){
 ggsave("000_exploration_example_trajectory.pdf",height =4,width = 9)
-
+}
 
 explorationBehaSimu <- bind_rows(explorationDf,
-                            explorationSimulationDf%>%mutate(source = "simulation"))%>%
+                                 explorationSimulationDf%>%mutate(source = "simulation"))%>%
   ungroup()%>%
   mutate(source = 
            ifelse(source == "behavioral",
@@ -35,14 +38,14 @@ tmp%>%ggplot(aes(step,meanMaxPayoff,color=factor(rich),linetype = source))+
   geom_line(size=1.2)+geom_errorbar(aes(ymin =meanMaxPayoff-sd,ymax=meanMaxPayoff+sd,fill = factor(rich)),
                                     alpha=.5,data = tmp %>% filter(source =="experimental\ndata\n" ))+
   labs(x="round",y="mean maximal norm. payoff", color="landscape")
-
-ggsave("001_exploration_payoff.pdf",height =4,width = 5)
-
+if(PLOTFIGURES){
+  ggsave("001_exploration_payoff.pdf",height =4,width = 5)
+}
 levelidnumbers <- c(base::sample(seq(1,4000,2),500),
                     base::sample(seq(2,4000,2),500))
 explorationBehaSimuMini <- bind_rows(explorationDf,explorationSimulationDf %>%
-                                  filter(levelid %in%levelidnumbers)%>%
-                                  mutate(source = "simulation"))
+                                       filter(levelid %in%levelidnumbers)%>%
+                                       mutate(source = "simulation"))
 
 explorationBehaSimuMini %>%  
   group_by(userid,levelid,source,rich) %>%
@@ -58,8 +61,9 @@ explorationBehaSimuMini %>%
   labs(x = "position x", y= "position y", fill = "log(density)")+
   theme(panel.grid.major = element_blank(),strip.text = element_text(size=14),
         strip.background = element_rect(fill="white", colour="black"))
-ggsave("002_exploration_density.pdf",height =8,width = 11)
-
+if(PLOTFIGURES){
+  ggsave("002_exploration_density.pdf",height =8,width = 11)
+}
 A <- explorationBehaSimu %>%
   group_by(userid, source, levelid, rich, position) %>% tally() %>%
   summarise(revisit = 1-(sum(n - 1) / 30))  %>%
@@ -83,8 +87,9 @@ plot_grid((A+ theme(legend.position='none')),
           (C+ theme(legend.position='none')),
           NULL,get_legend(C),NULL,nrow = 2,rel_widths=c(3,3,3),
           rel_heights = c(1,.2),labels=c("A","B","C",NULL),align = "v",axis="t")
-ggsave("010_rule_follow.pdf",height =4,width = 12)
-
+if(PLOTFIGURES){
+  ggsave("010_rule_follow.pdf",height =4,width = 12)
+}
 ###
 # exploitation
 ###
@@ -109,11 +114,12 @@ C <- get_legend(B)
 plot_grid(A+ theme(legend.position='none'),
           B+ theme(legend.position='none'),
           C,nrow = 1,rel_widths=c(3,3,.7),labels=c("A","B",NULL) )
-ggsave("100_exploitation_example_trajectory_.pdf",height =4,width = 9)
-
+if(PLOTFIGURES){
+  ggsave("100_exploitation_example_trajectory_.pdf",height =4,width = 9)
+}
 exploitationBehaSimu <- bind_rows(exploitationDf,exploitationSimulationDf)%>%
   mutate(source = ifelse(source == "behavioral",
-                  "experimental\ndata\n", "numerical\nsimulation"))
+                         "experimental\ndata\n", "numerical\nsimulation"))
 exploitationBehaSimu <- exploitationBehaSimu %>% group_by(userid,source,levelid) %>%
   arrange(source,levelid,step) %>%
   mutate(direction = position - lead(position),
@@ -136,8 +142,9 @@ B<-exploitationBehaSimu %>%  filter(step < 30)%>%
   complete(step,behavior,source, fill = list(freq=0))%>% ggplot(aes(step, freq, color=factor(behavior),linetype = source)) +
   geom_line(size=1.2)+labs(x="round", y="frequency",linetype ="source",color="behavior")+scale_color_viridis(discrete =T )
 plot_grid(A,B,labels = c("A","B"))
-ggsave("103_exploitation_behavior.pdf",height =4,width = 10)
-
+if(PLOTFIGURES){
+  ggsave("103_exploitation_behavior.pdf",height =4,width = 10)
+}
 bind_rows(exploitationDf,exploitationSimulationDf )%>%
   group_by(source,userid,levelid) %>%
   mutate(endPosition = position[31],
@@ -160,9 +167,9 @@ bind_rows(exploitationDf,exploitationSimulationDf )%>%
   scale_fill_viridis(option = "B")+facet_wrap(~source)+
   theme(panel.grid.major = element_blank(),strip.text = element_text(size=14),
         strip.background = element_rect(fill="white", colour="black"))
-  
-ggsave("111_exploitation_payoff_safety_density.pdf",height =4,width = 7)
-  
+if(PLOTFIGURES){
+  ggsave("A111_exploitation_payoff_safety_density.pdf",height =4,width = 7)
+}
 
 
 ###
@@ -170,7 +177,7 @@ ggsave("111_exploitation_payoff_safety_density.pdf",height =4,width = 7)
 ###
 
 combinedBehaSimu <- bind_rows(combinedDf,
-                             combinedSimulationDf%>% mutate(source = "simulation"))%>%
+                              combinedSimulationDf%>% mutate(source = "simulation"))%>%
   mutate(source = ifelse(source == "behavioral",
                          "experimental\ndata", "numerical\nsimulation"))
 
@@ -179,17 +186,21 @@ tmp<-combinedBehaSimu%>%
   summarise(meanPayoff=mean(normPayoff),se=sd(normPayoff)/sqrt(n()))
 tmp%>%
   ggplot(aes(step,meanPayoff,color=rich,linetype = source)) +
-  geom_errorbar(aes(ymin = meanPayoff - se, ymax=meanPayoff + se), data = tmp %>% filter(source =="experimental\ndata" ),alpha=.5)+
   geom_line(size=1.2)+
+  geom_errorbar(aes(ymin = meanPayoff - se, ymax=meanPayoff + se),
+                data = tmp %>% filter(source =="experimental\ndata" ),alpha=.5)+
+  
   labs(x="round", y="mean norm. payoff",linetype ="source",color="landscape")
-ggsave("200_combined_payoff.pdf",height =4,width = 5)
-
+if(PLOTFIGURES){
+ggsave("A200_combined_payoff.pdf",height =4,width = 5)
+ggsave("A200_combined_payoff.png",height =4,width = 5)
+}
 levelidnumbers <- c(base::sample(seq(8001,12000,2),500),
                     base::sample(seq(8002,12000,2),500))
 combinedBehaSimuMini <- filter(combinedBehaSimu,
-                              source == "experimental\ndata" | levelid %in%levelidnumbers)
-  
-  
+                               source == "experimental\ndata" | levelid %in%levelidnumbers)
+
+
 combinedBehaSimuMini %>%  
   group_by(userid,levelid,source) %>%
   mutate(duplicated = !duplicated(position)) %>% filter(duplicated)%>%
@@ -203,5 +214,6 @@ combinedBehaSimuMini %>%
   labs(x = "position x", y= "position y", fill = "log(density)")+
   theme(panel.grid.major = element_blank(),strip.text = element_text(size=14),
         strip.background = element_rect(fill="white", colour="black"))
+if(PLOTFIGURES){
 ggsave("201_combined_density.pdf",height =8,width = 11)
-  
+}

@@ -44,9 +44,9 @@ getAreaMatrix1D <- function(x){
   return(resultArray1D[x,])
 }
 
-safetyLevelCalc <- function(maxPayoff, ignoreLevel = 1, stopLevel, safetyLevel){
+safetyLevelCalc <- function(maxPayoff, ignoreLevel, stopLevel, safetyLevel){
   
-  if(maxPayoff <= ignoreLevel ){return(60)}
+  if(maxPayoff <= ignoreLevel ){return(1000)}
   if(maxPayoff > stopLevel ){return(0)}
   return(safetyLevel)
 }
