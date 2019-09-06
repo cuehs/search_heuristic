@@ -6,7 +6,9 @@ source(here("/data_analysis/_basic.R"))
 ###
 
 print("run simulation explore (this may take a while)")
+
 experimentalLevelId <- seq(1,1000)
+
 explorationSimulationDf <- tibble(
   userid = integer(),
   step = integer(),
@@ -40,7 +42,7 @@ explorationSimulationDf<- explorationSimulationDf %>%ungroup()%>%
 print("run simulation exploration")
 ## fit is max payoff found with noiseLevel
 
-toTrain <-  explorationDf %>%
+toTrain <-  explorationDf %>% 
   group_by(step) %>%
   summarise(meanMaxPayoff = mean(normMaxTill)) %>%
   pull(meanMaxPayoff)
@@ -162,7 +164,7 @@ exploitationSimulationDf<- exploitationSimulationDf %>%ungroup()%>%
 
 print("run: fit combined")
 
-experimentalData <- combinedDf %>% group_by(levelid)%>% 
+experimentalData <- combinedDf %>% group_by(levelid)%>%
   mutate(endPositionX = positionX[31], endPositionY = positionY[31],
          endPayoff = payoff[31],endMaxPayoff = max(maxTill[31]))  %>% 
   group_by(userid,source,levelid,rich,endMaxPayoff) %>% 
@@ -209,7 +211,8 @@ summary(m2)
 print("combined phase")
 summary(m2)
 summary(safetyCombined)
-print(paste("k:",(m2$coefficients), 
+
+print(paste("ignore:",(round(1/(-1*kIgnore)) ), "stop:", round(1/kCombined) ,
             "safety level: mean: ", meanCombined , "sd:",sdCombined))
 
 print("run: simulation combine")

@@ -13,24 +13,24 @@ simulationExploit <- function(levelid,name){
   if(name == "stop_first_peak"){
     ignoreLevelP <<- 1
     stopLevelP <<-2
-    tmp <- oneCombinedSimulation(levelid,T,T,T)
+    tmp <- oneCombinedSimulationN(levelid,T,T,T)
     ignoreLevelP <<- ignoreLevelBackup
     stopLevelP <<- stopLevelBackup
   }
   if(name == "aspiration"){
     ignoreLevelP <<- 1
-    tmp <- oneCombinedSimulation(levelid,T,T,T)
+    tmp <- oneCombinedSimulationN(levelid,T,T,T)
     ignoreLevelP <<- ignoreLevelBackup
     stopLevelP <<- stopLevelBackup
   }
   if(name == "aspiration_and_minimal"){
-    tmp <- oneCombinedSimulation(levelid,T,T,T)
+    tmp <- oneCombinedSimulationN(levelid,T,T,T)
   }
   if(name == "no_safety"){
     safetyLevelMean <<- .9
     safetyLevelSd <<- .001
     stopLevelP <<-1000
-    tmp <- oneCombinedSimulation(levelid,T,T,T)
+    tmp <- oneCombinedSimulationN(levelid,T,T,T)
     safetyLevelMean <<- safetyLevelMeanBackup 
     safetyLevelSd <<- safetyLevelSdBackup 
     stopLevelP <<- stopLevelBackup
@@ -43,28 +43,30 @@ simulationExplore <- function(levelid,name){
   levelid <- unique(levelid)
   name <- unique(name)
   if((levelid %% 100) == 1){
-    print(paste(levelid,name,ignoreLevelP,stopLevelP))}
+    print(paste(levelid,name,ignoreLevelP,stopLevelP))
+    print(paste(ignoreLevelP,stopLevelP,safetyLevelMean,safetyLevelSd))
+    }
   if(name == "random"){
-    return(oneCombinedSimulation(levelid,F,F,F))
+    return(oneCombinedSimulationN(levelid,F,F,F))
   }
   if(name == "full"){
-    return(oneCombinedSimulation(levelid,T,T,T))
+    return(oneCombinedSimulationN(levelid,T,T,T))
   }
   if(name == "blind"){
-    return(oneCombinedSimulation(levelid,T,F,T))
+    return(oneCombinedSimulationN(levelid,T,F,T))
   }
   if(name == "diagonal"){
     eps <<-noise
     noise <<-0 
-    x<-(oneCombinedSimulation(levelid,T,F,T))
+    x<-(oneCombinedSimulationN(levelid,T,F,T))
     noise <<- eps
     return(x)
   }
   if(name == "directed_random"){
-    return(oneCombinedSimulation(levelid,T,F,F))
+    return(oneCombinedSimulationN(levelid,T,F,F))
   }
   if(name == "follow_gradient"){
-    return(oneCombinedSimulation(levelid,T,T,F))
+    return(oneCombinedSimulationN(levelid,T,T,F))
   }
   if(name == "probabalistic_time"){
     return(oneTradeoffSimulation(levelid,"time"))
@@ -78,7 +80,7 @@ simulationExplore <- function(levelid,name){
 }
 
 
-oneCombinedSimulation <- function(levelid, nonVisitiedCue, payoffCue, visibilityCue ) {
+oneCombinedSimulationN <- function(levelid, nonVisitiedCue, payoffCue, visibilityCue ) {
   
   landscape <- landscapesMatrix[[levelid]]
   
