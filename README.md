@@ -1,14 +1,17 @@
 # Search as a simple take-the-best heuristic
 
-Complete experimental code, simulation code, evaluation code, and data for replicating the results from:
+
+Complete experimental code, simulation code, evaluation code, and data to recplicate the results from:
 ``Search as a simple take-the-best heuristic``
 
 ## Getting Started
 
-The project structure consists of three main parts
+The project structure consists of four main parts
+
  1) The experimental paradigm in *experiment*
  2) The experimental data in *data*
  3) Evaluation and simulation code in *data_analysis*
+ 4) Evaluation and simulation code requested after review in *data_analysis/review*
  
 ## Experiment
 
@@ -70,6 +73,7 @@ run ``_basic.R ``
 ### Simulation
 
 To fit the parameters of the simulation to the experimental data run ``run_and_fit_simulation.R``
+To check model prediction quality (cross validated) run ``model_comparison_cross_validation.R``
 
 ### Figures
 
